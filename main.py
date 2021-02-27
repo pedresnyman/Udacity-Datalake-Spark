@@ -1,6 +1,5 @@
 from buckets_dropcreate import main_bucket_dropcreate
-from emr_createsubmit import  main_emr_createsubmit
-
+from emr_createsubmit import main_emr_createsubmit
 
 if __name__ == '__main__':
     """

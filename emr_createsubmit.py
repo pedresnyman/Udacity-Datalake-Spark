@@ -6,6 +6,7 @@ from datetime import datetime
 config = configparser.ConfigParser()
 config.read('dl.cfg')
 
+
 def create_cluster(emr):
     """
     Create EMR CLuster
@@ -14,7 +15,7 @@ def create_cluster(emr):
     """
     root_bucket = config.get('S3_CONF', 'ROOT_BUCKET')
     input_data = config.get('S3_CONF', 'INPUT_DATA')
-    step_app_name =  config.get('CLUSTER_CONF', 'STEP_APP_NAME')
+    step_app_name = config.get('CLUSTER_CONF', 'STEP_APP_NAME')
 
     args = [
         'spark-submit',
@@ -32,13 +33,13 @@ def create_cluster(emr):
     ec2subnet = config.get('CLUSTER_CONF', 'EC2SUBNET')
 
     JOB_FLOW_OVERRIDES = {
-       "Name": cluster_name,
-       "LogUri": logging_bucket,
-       "ReleaseLabel": "emr-5.30.1",
+        "Name": cluster_name,
+        "LogUri": logging_bucket,
+        "ReleaseLabel": "emr-5.30.1",
         # We want our EMR cluster to have HDFS and Spark
         "Applications": [
-           {"Name": "Hadoop"},
-           {"Name": "Spark"}
+            {"Name": "Hadoop"},
+            {"Name": "Spark"}
         ],
         "Configurations": [
             {
@@ -60,55 +61,55 @@ def create_cluster(emr):
                 },
                 {
                     "Name": "Core - 2",
-                    "Market": "SPOT", # Spot instances are a "use as available" instances
+                    "Market": "SPOT",  # Spot instances are a "use as available" instances
                     "InstanceRole": "CORE",
                     "InstanceType": "m5.xlarge",
                     "InstanceCount": 2,
                 },
             ],
-            "KeepJobFlowAliveWhenNoSteps": False, # this terminates the cluster after all steps are completed
-            "TerminationProtected": False, # this lets us programmatically terminate the cluster
+            "KeepJobFlowAliveWhenNoSteps": False,  # this terminates the cluster after all steps are completed
+            "TerminationProtected": False,  # this lets us programmatically terminate the cluster
         },
         "VisibleToAllUsers": True,
         "JobFlowRole": jobflow_role,
         "ServiceRole": service_role,
         "BootstrapActions": [
-          {
-             "Name": "copy scripts",
-             "ScriptBootstrapAction": {
-                "Path": bootstrap_file
-             }
-          }
-       ]
-    }
-
-
-    response_run_job_flow = emr.run_job_flow(
-       Name = JOB_FLOW_OVERRIDES['Name'],
-       LogUri = JOB_FLOW_OVERRIDES['LogUri'],
-       ReleaseLabel = JOB_FLOW_OVERRIDES['ReleaseLabel'],
-       Instances = JOB_FLOW_OVERRIDES['Instances'],
-       Applications = JOB_FLOW_OVERRIDES['Applications'],
-       Configurations = JOB_FLOW_OVERRIDES['Configurations'],
-       VisibleToAllUsers = JOB_FLOW_OVERRIDES['VisibleToAllUsers'],
-       JobFlowRole = JOB_FLOW_OVERRIDES['JobFlowRole'],
-       ServiceRole = JOB_FLOW_OVERRIDES['ServiceRole'],
-       BootstrapActions = JOB_FLOW_OVERRIDES['BootstrapActions'],
-       Steps=[{
-                'Name': step_app_name,
-                'HadoopJarStep': {
-                    'Jar': 'command-runner.jar',
-                    'Args': args
+            {
+                "Name": "copy scripts",
+                "ScriptBootstrapAction": {
+                    "Path": bootstrap_file
                 }
             }
+        ]
+    }
+
+    response_run_job_flow = emr.run_job_flow(
+        Name=JOB_FLOW_OVERRIDES['Name'],
+        LogUri=JOB_FLOW_OVERRIDES['LogUri'],
+        ReleaseLabel=JOB_FLOW_OVERRIDES['ReleaseLabel'],
+        Instances=JOB_FLOW_OVERRIDES['Instances'],
+        Applications=JOB_FLOW_OVERRIDES['Applications'],
+        Configurations=JOB_FLOW_OVERRIDES['Configurations'],
+        VisibleToAllUsers=JOB_FLOW_OVERRIDES['VisibleToAllUsers'],
+        JobFlowRole=JOB_FLOW_OVERRIDES['JobFlowRole'],
+        ServiceRole=JOB_FLOW_OVERRIDES['ServiceRole'],
+        BootstrapActions=JOB_FLOW_OVERRIDES['BootstrapActions'],
+        Steps=[{
+            'Name': step_app_name,
+            'HadoopJarStep': {
+                'Jar': 'command-runner.jar',
+                'Args': args
+            }
+        }
         ]
     )
 
     if response_run_job_flow['ResponseMetadata']['HTTPStatusCode'] != 200:
-       raise Exception(f'Bad Response! Response Code:{response_run_job_flow["ResponseMetadata"]["HTTPStatusCode"]}')
+        raise Exception(f'Bad Response! Response Code:{response_run_job_flow["ResponseMetadata"]["HTTPStatusCode"]}')
 
     job_flow_id = response_run_job_flow['JobFlowId']
     return job_flow_id
+
 
 def get_cluster_status(emr, job_flow_id):
     """
@@ -129,7 +130,8 @@ def state(emr, job_flow_id):
     )
     start_tz = response_describe_cluster['Cluster']['Status']['Timeline']['CreationDateTime']
     start = start_tz.replace(tzinfo=None)
-    while get_cluster_status(emr, job_flow_id) not in ['TERMINATED', 'TERMINATING', 'TERMINATED_WITH_ERRORS', 'WAITING']:
+    while get_cluster_status(emr, job_flow_id) not in ['TERMINATED', 'TERMINATING', 'TERMINATED_WITH_ERRORS',
+                                                       'WAITING']:
         now = datetime.today()
         elapsedTime = now - start
         print(f'Cluster running time: {elapsedTime}')
@@ -140,12 +142,13 @@ def state(emr, job_flow_id):
 
     get_cluster_status(emr, job_flow_id)
 
+
 def main_emr_createsubmit():
     emr = boto3.client(
-       'emr',
-       region_name = 'eu-west-1',
-       aws_access_key_id = config.get('AWS', 'AWS_ACCESS_KEY_ID'),
-       aws_secret_access_key = config.get('AWS', 'AWS_SECRET_ACCESS_KEY')
+        'emr',
+        region_name='eu-west-1',
+        aws_access_key_id=config.get('AWS', 'AWS_ACCESS_KEY_ID'),
+        aws_secret_access_key=config.get('AWS', 'AWS_SECRET_ACCESS_KEY')
     )
     job_flow_id = create_cluster(emr)
     state(emr, job_flow_id)

@@ -20,24 +20,29 @@ Then on your local machine: `python main.py`
 
 The process will check if the destination bucket exists. If it exists the process will delete all content inside the bucket and the bucket as well, then creates a folder structure on s3 for our process.
  
-The process will create folders for our tables, emr configuration (bootstrap file) and our pyspark code then upload all needed files top run the process.
+The process will create folders for our tables, emr configuration (bootstrap file), and our pyspark code then upload all needed files top run the process.
 
 Please note that this process uses the default EMR job flow role (EMR_EC2_DefaultRole), default EC2 service role (EMR_DefaultRole) and default subnet.
-
 
 
 ## Data sources
 
  - `s3a://udacity-dend/song_data/*/*/*` - JSON files containing meta information about song/artists data
  - `s3a://udacity-dend/log_data/*/*` - JSON files containing log events from the Sparkify app
+
+## Fact and Dimension tables:
  
- ## Parquet data schema
+ Fact and Dimension tables are seen below: 
+
+![alt text](/Users/pedresnyman/PycharmProjects/aws_datalake/Song_ERD.png)
+ 
+## Parquet data schema
  
  After reading from these two data sources, we will transform it to the schema described below:
  
  #### Song Plays table
 
-- *Location:* `s3a://sparkify-pedre-datalake/tables/songplays/songplays.parquet`
+- *Location:* `s3a://sparkify-pedre-datalake/tables/songplays/`
 - *Type:* Fact table
 
 | Column | Type | Description |
@@ -54,7 +59,7 @@ Please note that this process uses the default EMR job flow role (EMR_EC2_Defaul
 
 #### Users table
 
-- *Location:* `s3a://sparkify-pedre-datalake/tables/users/users.parquet`
+- *Location:* `s3a://sparkify-pedre-datalake/tables/users/`
 - *Type:* Dimension table
 
 | Column | Type | Description |
@@ -68,7 +73,7 @@ Please note that this process uses the default EMR job flow role (EMR_EC2_Defaul
 
 #### Songs table
 
-- *Location:* `s3a://sparkify-pedre-datalake/tables/songs/songs.parquet`
+- *Location:* `s3a://sparkify-pedre-datalake/tables/songs/`
 - *Type:* Dimension table
 
 | Column | Type | Description |
@@ -82,7 +87,7 @@ Please note that this process uses the default EMR job flow role (EMR_EC2_Defaul
 
 #### Artists table
 
-- *Location:* `s3a://sparkify-pedre-datalake/tables/artists/artists.parquet`
+- *Location:* `s3a://sparkify-pedre-datalake/tables/artists/`
 - *Type:* Dimension table
 
 | Column | Type | Description |
@@ -95,7 +100,7 @@ Please note that this process uses the default EMR job flow role (EMR_EC2_Defaul
 
 #### Time table
 
-- *Location:* `s3a://sparkify-pedre-datalake/tables/time/time.parquet`
+- *Location:* `s3a://sparkify-pedre-datalake/tables/time/`
 - *Type:* Dimension table
 
 | Column | Type | Description |

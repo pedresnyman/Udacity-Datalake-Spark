@@ -4,6 +4,7 @@ import boto3
 config = configparser.ConfigParser()
 config.read('dl.cfg')
 
+
 def dropcreate_bucket(s3, root_bucket):
     bucket = s3.Bucket(root_bucket)
     # Delete bucket if exists
@@ -24,11 +25,12 @@ def dropcreate_bucket(s3, root_bucket):
 
     return bucket
 
+
 def create_keys(tables, bucket):
     # Create folders for the tables
     for table in tables:
         try:
-            bucket.put_object(Key='tables/'+table)
+            bucket.put_object(Key='tables/' + table)
             print(f'Folder/Key created: {table}')
         except Exception as e:
             raise e
@@ -37,13 +39,13 @@ def create_keys(tables, bucket):
 def upload_file(bucket):
     conf = {
         'emr_boostrap.sh': 'pyspark_code/bootstrap/emr_boostrap.sh',
-        'etl.py': "pyspark_code/code/etl.py",
-        'dl.cfg': "pyspark_code//dl.cfg"
+        'etl.py': "pyspark_code/code/etl.py"
     }
     for file, s3key in conf.items():
         bucket.upload_file(file, s3key)
         print(f'upload file ; {file}')
     print('All files are ready to be executed!')
+
 
 def main_bucket_dropcreate():
     tables = ['songs/', 'artists/', 'users/', 'time/', 'songplays/']
