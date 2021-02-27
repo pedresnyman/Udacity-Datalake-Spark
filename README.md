@@ -112,3 +112,10 @@ Please note that this process uses the default EMR job flow role (EMR_EC2_Defaul
 | `month` | `INTEGER` | The month of the year from the timestamp |
 | `year` | `INTEGER` | The year from the timestamp |
 | `weekday` | `STRING` | The week day from the timestamp (Monday to Friday) |
+
+
+# TODO/Features:
+| Summary | Description |
+| ------ | ----------- |
+| `logging` | Create custom logging within the `etl.py` to log Spark progress |
+| `scaling` | Autoscaling could be a cool feature  |
