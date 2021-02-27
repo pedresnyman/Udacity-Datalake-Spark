@@ -20,7 +20,7 @@ Then on your local machine: `python main.py`
 
 The process will check if the destination bucket exists. If it exists the process will delete all content inside the bucket and the bucket as well, then creates a folder structure on s3 for our process.
  
-The process will create folders for our tables, emr configuration (bootstrap file), and our pyspark code then upload all needed files top run the process.
+The process will create folders for our tables, emr configuration (bootstrap file), and our pyspark code then upload all needed files to run the process.
 
 Please note that this process uses the default EMR job flow role (EMR_EC2_DefaultRole), default EC2 service role (EMR_DefaultRole) and default subnet.
 
