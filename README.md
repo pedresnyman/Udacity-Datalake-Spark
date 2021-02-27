@@ -34,7 +34,7 @@ Please note that this process uses the default EMR job flow role (EMR_EC2_Defaul
  
  Fact and Dimension tables are seen below: 
 
-![alt text](/Users/pedresnyman/PycharmProjects/aws_datalake/Song_ERD.png)
+![alt text](/Song_ERD.png)
  
 ## Parquet data schema
  
